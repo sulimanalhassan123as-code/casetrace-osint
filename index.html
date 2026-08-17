@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="CaseTrace — Professional OSINT Investigation Console for public-source intelligence gathering and evidence-led case management.">
+<meta name="description" content="CaseTrace — Professional OSINT Investigation Console for public-source intelligence gathering, digital footprint analysis, and evidence-led case management.">
 <title>CaseTrace // OSINT Investigation Console</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 :root{
   --bg:#060809;
-  --bg-grad-1:#0a1518;
-  --bg-grad-2:#060809;
   --panel:#0b1115;
   --panel-2:#080d10;
   --line:#1a2a34;
@@ -28,8 +28,10 @@
   --blue:#68a8f0;
   --blue-bg:rgba(104,168,240,.08);
   --purple:#a78bfa;
+  --purple-bg:rgba(167,139,250,.08);
+  --orange:#f5a05c;
   --radius:8px;
-  --mono:'JetBrains Mono','SF Mono',ui-monospace,SFMono-Regular,Consolas,'Liberation Mono',monospace;
+  --mono:'JetBrains Mono','SF Mono',ui-monospace,SFMono-Regular,Consolas,monospace;
   --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   --shadow:0 8px 32px rgba(0,0,0,.5);
   --shadow-lg:0 20px 60px rgba(0,0,0,.6);
@@ -37,8 +39,6 @@
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 body{
   background:var(--bg);
@@ -65,391 +65,125 @@ header{
   z-index:100;
 }
 
-.logo{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
+.logo{display:flex;align-items:center;gap:12px}
 
 .logo-mark{
-  width:34px;
-  height:34px;
-  border-radius:8px;
+  width:34px;height:34px;border-radius:8px;
   background:linear-gradient(135deg,#1a3d31,#0d2a20);
   border:1px solid var(--accent-dim);
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display:flex;align-items:center;justify-content:center;
   font-size:16px;
 }
 
-.logo-text{
-  display:flex;
-  flex-direction:column;
-}
+.logo-text{display:flex;flex-direction:column}
+.logo-text b{font-size:15px;font-weight:700;letter-spacing:.5px;color:var(--accent)}
+.logo-text small{font-size:10px;color:var(--muted-2);letter-spacing:.3px}
 
-.logo-text b{
-  font-size:15px;
-  font-weight:700;
-  letter-spacing:.5px;
-  color:var(--accent);
-}
+.header-meta{display:flex;align-items:center;gap:20px;font:11px var(--mono);color:var(--muted)}
+.header-meta span{display:flex;align-items:center;gap:6px}
 
-.logo-text small{
-  font-size:10px;
-  color:var(--muted-2);
-  letter-spacing:.3px;
-}
-
-.header-meta{
-  display:flex;
-  align-items:center;
-  gap:20px;
-  font:11px var(--mono);
-  color:var(--muted);
-}
-
-.header-meta span{
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-
-.header-meta .live-dot{
-  width:7px;
-  height:7px;
-  border-radius:50%;
-  background:var(--accent);
-  box-shadow:0 0 10px var(--accent);
+.live-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--accent);box-shadow:0 0 10px var(--accent);
   animation:pulse 2s infinite;
 }
 
-@keyframes pulse{
-  0%,100%{opacity:1}
-  50%{opacity:.4}
-}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
 /* ── Layout ── */
-.wrap{
-  max-width:1280px;
-  margin:0 auto;
-  padding:24px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:340px 1fr;
-  gap:20px;
-}
+.wrap{max-width:1280px;margin:0 auto;padding:24px}
+.grid{display:grid;grid-template-columns:340px 1fr;gap:20px}
 
 /* ── Panels ── */
 .panel{
   background:linear-gradient(180deg,var(--panel),var(--panel-2));
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:20px;
+  border:1px solid var(--line);border-radius:12px;padding:20px;
   box-shadow:var(--shadow);
 }
-
 .panel + .panel{margin-top:16px}
 
 .panel-title{
-  font:600 11px var(--sans);
-  text-transform:uppercase;
-  letter-spacing:.1em;
-  color:#9bb0b8;
-  margin-bottom:16px;
-  display:flex;
-  align-items:center;
-  gap:8px;
+  font:600 11px var(--sans);text-transform:uppercase;letter-spacing:.1em;
+  color:#9bb0b8;margin-bottom:16px;display:flex;align-items:center;gap:8px;
 }
-
-.panel-title::before{
-  content:'';
-  width:3px;
-  height:14px;
-  border-radius:2px;
-  background:var(--accent);
-}
+.panel-title::before{content:'';width:3px;height:14px;border-radius:2px;background:var(--accent)}
 
 /* ── Form ── */
 .field{margin-bottom:16px}
-
-.field label{
-  display:block;
-  font:500 11px var(--sans);
-  color:var(--muted);
-  margin-bottom:6px;
-  letter-spacing:.02em;
-}
-
-.field input,
-.field textarea,
-.field select{
-  width:100%;
-  background:#040709;
-  border:1px solid var(--line);
-  color:var(--text);
-  border-radius:var(--radius);
-  padding:11px 13px;
-  font:13px var(--mono);
-  outline:none;
+.field label{display:block;font:500 11px var(--sans);color:var(--muted);margin-bottom:6px;letter-spacing:.02em}
+.field input,.field textarea,.field select{
+  width:100%;background:#040709;border:1px solid var(--line);color:var(--text);
+  border-radius:var(--radius);padding:11px 13px;font:13px var(--mono);outline:none;
   transition:border var(--transition),box-shadow var(--transition);
 }
-
-.field input:focus,
-.field textarea:focus,
-.field select:focus{
-  border-color:var(--accent-dim);
-  box-shadow:0 0 0 3px var(--accent-glow);
+.field input:focus,.field textarea:focus,.field select:focus{
+  border-color:var(--accent-dim);box-shadow:0 0 0 3px var(--accent-glow);
 }
-
-.field textarea{
-  min-height:80px;
-  resize:vertical;
-  font-family:var(--sans);
-}
-
-.field input::placeholder,
-.field textarea::placeholder{
-  color:var(--muted-2);
-}
+.field textarea{min-height:80px;resize:vertical;font-family:var(--sans)}
+.field input::placeholder,.field textarea::placeholder{color:var(--muted-2)}
 
 /* ── Buttons ── */
 .btn{
-  width:100%;
-  padding:12px 16px;
-  border-radius:var(--radius);
-  font:600 13px var(--sans);
-  cursor:pointer;
-  border:1px solid var(--accent-dim);
-  background:linear-gradient(180deg,#0e2a20,#0a2018);
-  color:var(--accent);
-  transition:all var(--transition);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
+  width:100%;padding:12px 16px;border-radius:var(--radius);font:600 13px var(--sans);
+  cursor:pointer;border:1px solid var(--accent-dim);
+  background:linear-gradient(180deg,#0e2a20,#0a2018);color:var(--accent);
+  transition:all var(--transition);display:flex;align-items:center;justify-content:center;gap:8px;
 }
-
-.btn:hover{
-  background:linear-gradient(180deg,#103528,#0d2820);
-  border-color:var(--accent);
-  box-shadow:0 0 20px var(--accent-glow);
-}
-
+.btn:hover{background:linear-gradient(180deg,#103528,#0d2820);border-color:var(--accent);box-shadow:0 0 20px var(--accent-glow)}
 .btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.secondary{background:#0d1519;color:var(--blue);border-color:#234555}
+.btn.secondary:hover{background:#122028;border-color:#336678;box-shadow:0 0 20px var(--blue-bg)}
+.btn.ghost{background:transparent;color:var(--muted);border-color:var(--line)}
+.btn.ghost:hover{color:var(--text);border-color:var(--muted);box-shadow:none}
+.btn-row{display:flex;gap:8px;margin-top:12px}
 
-.btn:disabled{
-  opacity:.4;
-  cursor:not-allowed;
-}
-
-.btn.secondary{
-  background:#0d1519;
-  color:var(--blue);
-  border-color:#234555;
-}
-
-.btn.secondary:hover{
-  background:#122028;
-  border-color:#336678;
-  box-shadow:0 0 20px var(--blue-bg);
-}
-
-.btn.ghost{
-  background:transparent;
-  color:var(--muted);
-  border-color:var(--line);
-}
-
-.btn.ghost:hover{
-  color:var(--text);
-  border-color:var(--muted);
-  box-shadow:none;
-}
-
-.btn-row{
-  display:flex;
-  gap:8px;
-  margin-top:12px;
-}
-
-/* ── Status Bar ── */
-.status-bar{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-bottom:18px;
-  padding-bottom:16px;
-  border-bottom:1px solid var(--line-soft);
-}
-
-.status-dot{
-  width:9px;
-  height:9px;
-  border-radius:50%;
-  background:var(--muted-2);
-  transition:all var(--transition);
-}
-
-.status-dot.active{
-  background:var(--accent);
-  box-shadow:0 0 12px var(--accent);
-  animation:pulse 2s infinite;
-}
-
-.status-dot.complete{
-  background:var(--accent);
-  box-shadow:0 0 8px var(--accent);
-}
-
-.status-label{
-  font:600 13px var(--sans);
-  color:var(--text);
-}
-
+/* ── Status ── */
+.status-bar{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--line-soft)}
+.status-dot{width:9px;height:9px;border-radius:50%;background:var(--muted-2);transition:all var(--transition)}
+.status-dot.active{background:var(--accent);box-shadow:0 0 12px var(--accent);animation:pulse 2s infinite}
+.status-dot.complete{background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.status-label{font:600 13px var(--sans);color:var(--text)}
 .case-badge{
-  margin-left:auto;
-  padding:4px 12px;
-  border-radius:20px;
-  border:1px solid var(--line);
-  background:var(--panel-2);
-  font:500 11px var(--mono);
-  color:var(--muted);
+  margin-left:auto;padding:4px 12px;border-radius:20px;border:1px solid var(--line);
+  background:var(--panel-2);font:500 11px var(--mono);color:var(--muted);
 }
-
-.case-badge.active{
-  border-color:var(--accent-dim);
-  color:var(--accent);
-}
+.case-badge.active{border-color:var(--accent-dim);color:var(--accent)}
 
 /* ── KPIs ── */
-.kpis{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-  margin-bottom:18px;
-}
-
-.kpi{
-  padding:14px;
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-  background:#070b0d;
-  text-align:center;
-  transition:border var(--transition);
-}
-
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:18px}
+.kpi{padding:14px 8px;border:1px solid var(--line);border-radius:var(--radius);background:#070b0d;text-align:center;transition:border var(--transition)}
 .kpi:hover{border-color:var(--accent-dim)}
-
-.kpi-val{
-  font:700 24px var(--mono);
-  color:#fff;
-  line-height:1;
-  margin-bottom:4px;
-}
-
-.kpi-label{
-  font:500 9px var(--sans);
-  color:var(--muted);
-  text-transform:uppercase;
-  letter-spacing:.08em;
-}
+.kpi-val{font:700 22px var(--mono);color:#fff;line-height:1;margin-bottom:4px}
+.kpi-label{font:500 9px var(--sans);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 
 /* ── Stages ── */
-.stages{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:8px;
-  margin-bottom:16px;
-}
-
+.stages{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:16px}
 .stage{
-  padding:12px 8px;
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-  text-align:center;
-  font:500 10px var(--sans);
-  color:var(--muted-2);
-  transition:all var(--transition);
-  position:relative;
+  padding:10px 6px;border:1px solid var(--line);border-radius:var(--radius);text-align:center;
+  font:500 9px var(--sans);color:var(--muted-2);transition:all var(--transition);position:relative;
 }
-
-.stage .num{
-  display:block;
-  font:700 16px var(--mono);
-  margin-bottom:4px;
-}
-
-.stage.active{
-  border-color:var(--accent-dim);
-  color:var(--accent);
-  background:var(--accent-glow);
-}
-
+.stage .num{display:block;font:700 14px var(--mono);margin-bottom:3px}
+.stage.active{border-color:var(--accent-dim);color:var(--accent);background:var(--accent-glow)}
 .stage.active .num{color:var(--accent)}
-
-.stage.done{
-  border-color:#1a3d2e;
-  color:#7abf9d;
-}
-
+.stage.done{border-color:#1a3d2e;color:#7abf9d}
 .stage.done .num{color:#7abf9d}
-
-.stage.done::after{
-  content:'✓';
-  position:absolute;
-  top:4px;
-  right:6px;
-  font-size:10px;
-  color:#7abf9d;
-}
+.stage.done::after{content:'✓';position:absolute;top:3px;right:5px;font-size:9px;color:#7abf9d}
 
 /* ── Progress ── */
-.progress{
-  height:4px;
-  background:#0d1519;
-  border-radius:20px;
-  overflow:hidden;
-  margin-bottom:16px;
-}
-
-.bar{
-  height:100%;
-  width:0;
-  background:linear-gradient(90deg,var(--accent-dim),var(--accent));
-  border-radius:20px;
-  transition:width 400ms ease;
-  box-shadow:0 0 12px var(--accent-glow);
-}
+.progress{height:4px;background:#0d1519;border-radius:20px;overflow:hidden;margin-bottom:16px}
+.bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent-dim),var(--accent));border-radius:20px;transition:width 400ms ease;box-shadow:0 0 12px var(--accent-glow)}
 
 /* ── Terminal ── */
 .terminal{
-  height:420px;
-  overflow-y:auto;
-  background:#030506;
-  border:1px solid #1a2932;
-  border-radius:var(--radius);
-  padding:16px;
-  font:12px/1.7 var(--mono);
-  scroll-behavior:smooth;
+  height:400px;overflow-y:auto;background:#030506;border:1px solid #1a2932;
+  border-radius:var(--radius);padding:16px;font:12px/1.7 var(--mono);scroll-behavior:smooth;
 }
-
 .terminal::-webkit-scrollbar{width:6px}
 .terminal::-webkit-scrollbar-track{background:transparent}
 .terminal::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
-
-.t-line{
-  margin:1px 0;
-  white-space:pre-wrap;
-  word-break:break-all;
-  opacity:0;
-  animation:fadeIn 200ms forwards;
-}
-
+.t-line{margin:1px 0;white-space:pre-wrap;word-break:break-all;opacity:0;animation:fadeIn 200ms forwards}
 @keyframes fadeIn{to{opacity:1}}
-
 .t-ok{color:var(--accent)}
 .t-info{color:var(--blue)}
 .t-warn{color:var(--warn)}
@@ -457,178 +191,76 @@ header{
 .t-muted{color:var(--muted-2)}
 .t-head{color:#9bb0b8;font-weight:600}
 .t-pivot{color:var(--purple)}
-
-.t-line .ts{
-  color:var(--muted-2);
-  margin-right:8px;
-}
+.t-footprint{color:var(--orange)}
+.t-line .ts{color:var(--muted-2);margin-right:8px}
 
 /* ── Record Table ── */
-.record-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-.record-table td{
-  padding:10px 12px;
-  border-bottom:1px solid var(--line-soft);
-  vertical-align:top;
-  font:13px var(--sans);
-}
-
+.record-table{width:100%;border-collapse:collapse}
+.record-table td{padding:10px 12px;border-bottom:1px solid var(--line-soft);vertical-align:top;font:13px var(--sans)}
 .record-table tr:last-child td{border-bottom:none}
-
-.record-table td:first-child{
-  width:30%;
-  color:var(--muted);
-  font-weight:500;
-  font-size:12px;
-}
-
-.record-table td:last-child{
-  color:var(--text);
-  word-break:break-all;
-}
-
-.record-table a{
-  color:var(--blue);
-  text-decoration:none;
-  border-bottom:1px solid transparent;
-  transition:border var(--transition);
-}
-
+.record-table td:first-child{width:28%;color:var(--muted);font-weight:500;font-size:12px}
+.record-table td:last-child{color:var(--text);word-break:break-all}
+.record-table a{color:var(--blue);text-decoration:none;border-bottom:1px solid transparent;transition:border var(--transition)}
 .record-table a:hover{border-color:var(--blue)}
 
 /* ── Notice ── */
 .notice{
-  padding:14px 16px;
-  border-left:3px solid var(--warn);
-  background:var(--warn-bg);
-  border-radius:0 var(--radius) var(--radius) 0;
-  font:12px/1.6 var(--sans);
-  color:#c4b078;
-  margin-top:16px;
+  padding:14px 16px;border-left:3px solid var(--warn);background:var(--warn-bg);
+  border-radius:0 var(--radius) var(--radius) 0;font:12px/1.6 var(--sans);color:#c4b078;margin-top:16px;
 }
-
 .notice strong{color:var(--warn)}
-
-.notice.danger{
-  border-left-color:var(--danger);
-  background:var(--danger-bg);
-  color:#d88080;
-}
-
+.notice.danger{border-left-color:var(--danger);background:var(--danger-bg);color:#d88080}
 .notice.danger strong{color:var(--danger)}
 
 /* ── Case History ── */
-.history{
-  max-height:200px;
-  overflow-y:auto;
-}
-
+.history{max-height:180px;overflow-y:auto}
 .history::-webkit-scrollbar{width:4px}
 .history::-webkit-scrollbar-thumb{background:var(--line)}
-
-.history-item{
-  padding:10px 12px;
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-  margin-bottom:8px;
-  cursor:pointer;
-  transition:all var(--transition);
-  background:#070b0d;
-}
-
-.history-item:hover{
-  border-color:var(--accent-dim);
-  background:#0a1216;
-}
-
-.history-item .h-case{
-  font:600 12px var(--mono);
-  color:var(--accent);
-}
-
-.history-item .h-target{
-  font:11px var(--mono);
-  color:var(--muted);
-  margin-top:2px;
-}
-
-.history-item .h-date{
-  font:10px var(--sans);
-  color:var(--muted-2);
-  margin-top:2px;
-}
-
-.history-empty{
-  text-align:center;
-  padding:24px;
-  color:var(--muted-2);
-  font:12px var(--sans);
-}
+.history-item{padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:all var(--transition);background:#070b0d}
+.history-item:hover{border-color:var(--accent-dim);background:#0a1216}
+.history-item .h-case{font:600 12px var(--mono);color:var(--accent)}
+.history-item .h-target{font:11px var(--mono);color:var(--muted);margin-top:2px}
+.history-item .h-date{font:10px var(--sans);color:var(--muted-2);margin-top:2px}
+.history-empty{text-align:center;padding:20px;color:var(--muted-2);font:12px var(--sans)}
 
 /* ── Tags ── */
-.tag{
-  display:inline-block;
-  padding:3px 10px;
-  border-radius:20px;
-  border:1px solid var(--line);
-  background:var(--panel-2);
-  font:500 10px var(--mono);
-  color:var(--muted);
-  margin:2px;
-}
-
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;border:1px solid var(--line);background:var(--panel-2);font:500 10px var(--mono);color:var(--muted);margin:2px}
 .tag.green{border-color:var(--accent-dim);color:var(--accent)}
 .tag.blue{border-color:#234555;color:var(--blue)}
 .tag.warn{border-color:#5a4a1a;color:var(--warn)}
+.tag.purple{border-color:#4a3a6a;color:var(--purple)}
+.tag.orange{border-color:#6a4a1a;color:var(--orange)}
+
+/* ── Footprint Grid ── */
+.footprint-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:14px}
+
+.fp-card{
+  padding:14px;border:1px solid var(--line);border-radius:var(--radius);
+  background:#070b0d;transition:all var(--transition);cursor:pointer;text-decoration:none;display:block;
+}
+.fp-card:hover{border-color:var(--accent-dim);background:#0a1216;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.fp-icon{font-size:22px;margin-bottom:8px}
+.fp-name{font:600 12px var(--sans);color:var(--text);margin-bottom:4px}
+.fp-desc{font:10px var(--mono);color:var(--muted)}
+.fp-status{font:9px var(--sans);margin-top:6px;padding:2px 8px;border-radius:10px;display:inline-block}
+.fp-status.ready{background:var(--blue-bg);color:var(--blue)}
+.fp-status.check{background:var(--accent-glow);color:var(--accent)}
 
 /* ── Footer ── */
-footer{
-  text-align:center;
-  padding:20px;
-  color:var(--muted-2);
-  font:11px var(--sans);
-}
-
+footer{text-align:center;padding:20px;color:var(--muted-2);font:11px var(--sans)}
 footer a{color:var(--muted)}
 
-/* ── Modal ── */
-.modal-bg{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.7);
-  backdrop-filter:blur(4px);
-  z-index:200;
-  align-items:center;
-  justify-content:center;
+/* ── Tabs ── */
+.tabs{display:flex;gap:4px;margin-bottom:14px;border-bottom:1px solid var(--line-soft;padding-bottom:0}
+.tab{
+  padding:10px 18px;border:1px solid var(--line);border-bottom:none;border-radius:var(--radius) var(--radius) 0 0;
+  background:#070b0d;cursor:pointer;font:500 12px var(--sans);color:var(--muted);transition:all var(--transition);
+  position:relative;top:1px;
 }
-
-.modal-bg.show{display:flex}
-
-.modal{
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:28px;
-  max-width:560px;
-  width:90%;
-  box-shadow:var(--shadow-lg);
-}
-
-.modal h3{
-  font:700 16px var(--sans);
-  color:var(--text);
-  margin-bottom:16px;
-}
-
-.modal p{
-  font:13px/1.6 var(--sans);
-  color:var(--muted);
-  margin-bottom:8px;
-}
+.tab:hover{color:var(--text)}
+.tab.active{border-color:var(--accent-dim);color:var(--accent);background:var(--panel);border-bottom:1px solid var(--panel)}
+.tab-content{display:none}
+.tab-content.active{display:block}
 
 /* ── Responsive ── */
 @media(max-width:900px){
@@ -639,19 +271,16 @@ footer a{color:var(--muted)}
   .header-meta{display:none}
   .wrap{padding:16px}
   .terminal{height:300px}
+  .footprint-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 
-<!-- ════ HEADER ════ -->
 <header>
   <div class="logo">
     <div class="logo-mark">🔍</div>
-    <div class="logo-text">
-      <b>CaseTrace</b>
-      <small>OSINT INVESTIGATION CONSOLE v2.0</small>
-    </div>
+    <div class="logo-text"><b>CaseTrace</b><small>OSINT INVESTIGATION CONSOLE v3.0</small></div>
   </div>
   <div class="header-meta">
     <span><span class="live-dot"></span> SYSTEM ONLINE</span>
@@ -660,27 +289,15 @@ footer a{color:var(--muted)}
   </div>
 </header>
 
-<!-- ════ MAIN ════ -->
 <div class="wrap">
 <div class="grid">
 
 <!-- ── LEFT SIDEBAR ── -->
 <aside>
-
-<!-- Case Intake -->
 <section class="panel">
   <div class="panel-title">Case Intake</div>
-
-  <div class="field">
-    <label>Case ID</label>
-    <input id="caseId" placeholder="CASE-2026-001" autocomplete="off">
-  </div>
-
-  <div class="field">
-    <label>Target Identifier</label>
-    <input id="target" placeholder="+91XXXXXXXXXX or email or @handle" autocomplete="off">
-  </div>
-
+  <div class="field"><label>Case ID</label><input id="caseId" placeholder="CASE-2026-001" autocomplete="off"></div>
+  <div class="field"><label>Target Identifier</label><input id="target" placeholder="+91XXXXXXXXXX or email or @handle" autocomplete="off"></div>
   <div class="field">
     <label>Target Type</label>
     <select id="targetType">
@@ -691,49 +308,30 @@ footer a{color:var(--muted)}
       <option value="other">Other Identifier</option>
     </select>
   </div>
-
-  <div class="field">
-    <label>Investigator Note</label>
-    <textarea id="note" placeholder="Record the purpose and scope of this investigation. Who requested it? What is the objective?"></textarea>
-  </div>
-
+  <div class="field"><label>Investigator Note</label><textarea id="note" placeholder="Record the purpose and scope of this investigation. Who requested it? What is the objective?"></textarea></div>
+  <div class="btn-row"><button class="btn" onclick="run()" id="runBtn">▶ START ASSESSMENT</button></div>
   <div class="btn-row">
-    <button class="btn" onclick="run()" id="runBtn">▶ START ASSESSMENT</button>
+    <button class="btn secondary" onclick="exportReport('json')">⬇ JSON REPORT</button>
+    <button class="btn secondary" onclick="exportReport('html')">⬇ HTML REPORT</button>
   </div>
-  <div class="btn-row">
-    <button class="btn secondary" onclick="exportReport('json')">⬇ EXPORT JSON</button>
-    <button class="btn secondary" onclick="exportReport('html')">⬇ EXPORT HTML</button>
-  </div>
-  <div class="btn-row">
-    <button class="btn ghost" onclick="clearAll()">CLEAR CASE</button>
-  </div>
+  <div class="btn-row"><button class="btn ghost" onclick="clearAll()">CLEAR CASE</button></div>
 </section>
 
-<!-- Ethics Panel -->
 <section class="panel">
   <div class="panel-title">Evidence Discipline</div>
-  <div class="notice">
-    <strong>Public sources only.</strong> This console does not claim access to private accounts, carrier records, device storage, encrypted chats, or subscriber databases. Findings are limited to what can be independently verified through open sources.
-  </div>
-  <div class="notice danger" style="margin-top:10px">
-    <strong>No fabrication.</strong> The console will not manufacture forensic results, infer subscriber identity from a number alone, or present speculative data as confirmed intelligence.
-  </div>
+  <div class="notice"><strong>Public sources only.</strong> This console does not access private accounts, carrier records, device storage, encrypted chats, or subscriber databases. All findings are limited to what can be independently verified through open sources.</div>
+  <div class="notice danger" style="margin-top:10px"><strong>No fabrication.</strong> The console will not manufacture forensic results, infer subscriber identity from a number alone, or present speculative data as confirmed intelligence.</div>
 </section>
 
-<!-- Case History -->
 <section class="panel">
   <div class="panel-title">Case History</div>
-  <div class="history" id="historyList">
-    <div class="history-empty">No previous cases in this session.</div>
-  </div>
+  <div class="history" id="historyList"><div class="history-empty">No previous cases in this session.</div></div>
 </section>
-
 </aside>
 
 <!-- ── RIGHT MAIN ── -->
 <main>
 
-<!-- Console -->
 <section class="panel">
   <div class="status-bar">
     <span class="status-dot" id="statusDot"></span>
@@ -742,95 +340,104 @@ footer a{color:var(--muted)}
   </div>
 
   <div class="kpis">
-    <div class="kpi">
-      <div class="kpi-val" id="k1">0</div>
-      <div class="kpi-label">Stages Complete</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-val" id="k2">0</div>
-      <div class="kpi-label">Public Pivots</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-val" id="k3">0</div>
-      <div class="kpi-label">Limitations</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-val" id="k4">0</div>
-      <div class="kpi-label">Evidence Items</div>
-    </div>
+    <div class="kpi"><div class="kpi-val" id="k1">0</div><div class="kpi-label">Stages</div></div>
+    <div class="kpi"><div class="kpi-val" id="k2">0</div><div class="kpi-label">Pivots</div></div>
+    <div class="kpi"><div class="kpi-val" id="k3">0</div><div class="kpi-label">Platforms</div></div>
+    <div class="kpi"><div class="kpi-val" id="k4">0</div><div class="kpi-label">Limitations</div></div>
+    <div class="kpi"><div class="kpi-val" id="k5">0</div><div class="kpi-label">Evidence</div></div>
   </div>
 
   <div class="stages">
-    <div class="stage" id="s1"><span class="num">01</span>TARGET INTAKE</div>
+    <div class="stage" id="s1"><span class="num">01</span>INTAKE</div>
     <div class="stage" id="s2"><span class="num">02</span>METADATA</div>
-    <div class="stage" id="s3"><span class="num">03</span>OSINT PIVOTS</div>
-    <div class="stage" id="s4"><span class="num">04</span>EVIDENCE</div>
-    <div class="stage" id="s5"><span class="num">05</span>REPORT</div>
+    <div class="stage" id="s3"><span class="num">03</span>PIVOTS</div>
+    <div class="stage" id="s4"><span class="num">04</span>FOOTPRINT</div>
+    <div class="stage" id="s5"><span class="num">05</span>EVIDENCE</div>
+    <div class="stage" id="s6"><span class="num">06</span>REPORT</div>
   </div>
 
   <div class="progress"><div class="bar" id="bar"></div></div>
 
   <div class="terminal" id="terminal">
-    <div class="t-line t-muted"><span class="ts">--:--:--</span>[READY] CaseTrace v2.0 initialized.</div>
-    <div class="t-line t-muted"><span class="ts">--:--:--</span>[READY] Awaiting target input. Enter an identifier and start an assessment.</div>
+    <div class="t-line t-muted"><span class="ts">--:--:--</span>[READY] CaseTrace v3.0 initialized.</div>
+    <div class="t-line t-muted"><span class="ts">--:--:--</span>[READY] Enter a target and start an assessment.</div>
   </div>
 </section>
 
-<!-- Assessment Record -->
+<!-- Tabbed Results -->
 <section class="panel">
-  <div class="panel-title">Assessment Record</div>
-  <table class="record-table">
-    <tr><td>Case ID</td><td id="rCase">—</td></tr>
-    <tr><td>Target</td><td id="rTarget">—</td></tr>
-    <tr><td>Target Type</td><td id="rType">—</td></tr>
-    <tr><td>Normalized Identifier</td><td id="rNorm">—</td></tr>
-    <tr><td>Calling-Code / Format</td><td id="rCountry">—</td></tr>
-    <tr><td>Public Search Pivots</td><td id="rPivots">—</td></tr>
-    <tr><td>Limitations</td><td id="rLimits"><span class="tag warn">Private messages</span> <span class="tag warn">Device data</span> <span class="tag warn">Carrier records</span> <span class="tag warn">Subscriber identity</span></td></tr>
-    <tr><td>Private Data</td><td style="color:var(--danger)">Not accessible through this public OSINT console.</td></tr>
-    <tr><td>Assessment Status</td><td id="rStatus">Not started</td></tr>
-    <tr><td>Timestamp</td><td id="rTime">—</td></tr>
-  </table>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('record')">Assessment Record</div>
+    <div class="tab" onclick="switchTab('footprint')">Digital Footprint</div>
+    <div class="tab" onclick="switchTab('pivots')">OSINT Pivots</div>
+  </div>
+
+  <!-- Record Tab -->
+  <div class="tab-content active" id="tab-record">
+    <table class="record-table">
+      <tr><td>Case ID</td><td id="rCase">—</td></tr>
+      <tr><td>Target</td><td id="rTarget">—</td></tr>
+      <tr><td>Target Type</td><td id="rType">—</td></tr>
+      <tr><td>Normalized Identifier</td><td id="rNorm">—</td></tr>
+      <tr><td>Region / Format</td><td id="rCountry">—</td></tr>
+      <tr><td>Platforms Checked</td><td id="rPlatforms">—</td></tr>
+      <tr><td>Limitations</td><td id="rLimits"><span class="tag warn">Private messages</span> <span class="tag warn">Device data</span> <span class="tag warn">Carrier records</span> <span class="tag warn">Subscriber identity</span></td></tr>
+      <tr><td>Private Data</td><td style="color:var(--danger)">Not accessible through this public OSINT console.</td></tr>
+      <tr><td>Assessment Status</td><td id="rStatus">Not started</td></tr>
+      <tr><td>Timestamp</td><td id="rTime">—</td></tr>
+    </table>
+  </div>
+
+  <!-- Footprint Tab -->
+  <div class="tab-content" id="tab-footprint">
+    <p style="color:var(--muted);font-size:12px;margin-bottom:14px">
+      Click each platform card to manually verify whether the target has a presence. These are public links — no private data is accessed or scraped.
+    </p>
+    <div class="footprint-grid" id="footprintGrid">
+      <div style="color:var(--muted-2);text-align:center;padding:30px;font-size:13px">Run an assessment to generate platform presence checks.</div>
+    </div>
+  </div>
+
+  <!-- Pivots Tab -->
+  <div class="tab-content" id="tab-pivots">
+    <p style="color:var(--muted);font-size:12px;margin-bottom:14px">
+      Public-source search pivots generated for the target. Each link opens a public search page for manual verification.
+    </p>
+    <div id="pivotsList">
+      <div style="color:var(--muted-2);text-align:center;padding:30px;font-size:13px">Run an assessment to generate OSINT pivots.</div>
+    </div>
+  </div>
 </section>
 
 </main>
 </div>
 
 <footer>
-  CaseTrace v2.0 — Records observations; it does not manufacture forensic results.
+  CaseTrace v3.0 — Records observations; it does not manufacture forensic results.
   &nbsp;|&nbsp; <a href="https://scamwatch-ghana.vercel.app" target="_blank" rel="noopener">ScamWatch Ghana</a>
 </footer>
-</div>
-
-<!-- ════ MODAL ════ -->
-<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <h3 id="modalTitle">Report Preview</h3>
-    <div id="modalBody"></div>
-    <div class="btn-row">
-      <button class="btn ghost" onclick="closeModal()">CLOSE</button>
-    </div>
-  </div>
 </div>
 
 <script>
 const $ = id => document.getElementById(id);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const now = () => new Date().toISOString().substr(11,8);
+const now = () => new Date().toISOString().substr(11, 8);
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
-// ── State ──
-let record = {
-  caseId:"", target:"", norm:"", type:"", country:"",
-  pivots:[], limitations:4, items:0, started:"", finished:"", status:"Not started"
-};
-
+let record = { caseId:"", target:"", norm:"", type:"", country:{}, pivots:[], platforms:[], limitations:4, items:0, started:"", finished:"", status:"Not started" };
 let history = [];
 let isRunning = false;
 
 // ── Clock ──
-setInterval(() => {
-  $('clock').textContent = new Date().toISOString().substr(11,8) + ' UTC';
-}, 1000);
+setInterval(() => { $('clock').textContent = new Date().toISOString().substr(11,8) + ' UTC'; }, 1000);
+
+// ── Tabs ──
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  $('tab-' + name).classList.add('active');
+}
 
 // ── Terminal ──
 function log(text, cls = '') {
@@ -851,24 +458,27 @@ function normalize(value, type) {
   return value;
 }
 
-// ── Country detection ──
-function detectRegion(identifier, type) {
+// ── Region detection ──
+function detectRegion(id, type) {
   if (type === 'phone') {
-    if (identifier.startsWith('+91')) return { region: 'India', code: '+91', flag: '🇮🇳' };
-    if (identifier.startsWith('+233')) return { region: 'Ghana', code: '+233', flag: '🇬🇭' };
-    if (identifier.startsWith('+44')) return { region: 'United Kingdom', code: '+44', flag: '🇬🇧' };
-    if (identifier.startsWith('+1')) return { region: 'North America', code: '+1', flag: '🇺🇸' };
-    if (identifier.startsWith('+27')) return { region: 'South Africa', code: '+27', flag: '🇿🇦' };
-    if (identifier.startsWith('+971')) return { region: 'UAE', code: '+971', flag: '🇦🇪' };
-    if (identifier.startsWith('+234')) return { region: 'Nigeria', code: '+234', flag: '🇳🇬' };
-    if (identifier.startsWith('+254')) return { region: 'Kenya', code: '+254', flag: '🇰🇪' };
-    if (identifier.startsWith('+86')) return { region: 'China', code: '+86', flag: '🇨🇳' };
-    if (identifier.startsWith('+49')) return { region: 'Germany', code: '+49', flag: '🇩🇪' };
-    if (identifier.startsWith('+33')) return { region: 'France', code: '+33', flag: '🇫🇷' };
+    const codes = [
+      ['+91','India','🇮🇳'],['+233','Ghana','🇬🇭'],['+44','United Kingdom','🇬🇧'],
+      ['+1','North America','🇺🇸'],['+27','South Africa','🇿🇦'],['+971','UAE','🇦🇪'],
+      ['+234','Nigeria','🇳🇬'],['+254','Kenya','🇰🇪'],['+86','China','🇨🇳'],
+      ['+49','Germany','🇩🇪'],['+33','France','🇫🇷'],['+234','Nigeria','🇳🇬'],
+      ['+92','Pakistan','🇵🇰'],['+880','Bangladesh','🇧🇩'],['+62','Indonesia','🇮🇩'],
+      ['+7','Russia','🇷🇺'],['+81','Japan','🇯🇵'],['+82','South Korea','🇰🇷'],
+      ['+55','Brazil','🇧🇷'],['+52','Mexico','🇲🇽'],['+90','Turkey','🇹🇷'],
+      ['+20','Egypt','🇪🇬'],['+212','Morocco','🇲🇦'],['+234','Nigeria','🇳🇬'],
+      ['+233','Ghana','🇬🇭'],['+234','Nigeria','🇳🇬']
+    ];
+    for (const [code, region, flag] of codes) {
+      if (id.startsWith(code)) return { region, code, flag };
+    }
     return { region: 'Unknown', code: '?', flag: '🏳️' };
   }
   if (type === 'email') {
-    const domain = identifier.split('@')[1] || '';
+    const domain = id.split('@')[1] || '';
     if (domain.includes('gmail')) return { region: 'Google Mail', code: 'gmail.com', flag: '📧' };
     if (domain.includes('yahoo')) return { region: 'Yahoo Mail', code: 'yahoo.com', flag: '📧' };
     if (domain.includes('outlook') || domain.includes('hotmail')) return { region: 'Microsoft Mail', code: 'outlook.com', flag: '📧' };
@@ -876,7 +486,7 @@ function detectRegion(identifier, type) {
     return { region: `Custom (${domain})`, code: domain, flag: '📧' };
   }
   if (type === 'domain') {
-    const tld = identifier.split('.').pop();
+    const tld = id.split('.').pop();
     return { region: `Domain (.${tld})`, code: tld, flag: '🌐' };
   }
   return { region: 'Identifier', code: type, flag: '🔎' };
@@ -884,7 +494,7 @@ function detectRegion(identifier, type) {
 
 // ── Stages ──
 function setStage(n, state = 'active') {
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= 6; i++) {
     $('s' + i).className = 'stage ' + (i < n ? 'done' : i === n ? state : '');
   }
 }
@@ -893,90 +503,206 @@ function setStage(n, state = 'active') {
 function kpis(done) {
   $('k1').textContent = done;
   $('k2').textContent = record.pivots.length;
-  $('k3').textContent = record.limitations;
-  $('k4').textContent = record.items;
+  $('k3').textContent = record.platforms.length;
+  $('k4').textContent = record.limitations;
+  $('k5').textContent = record.items;
 }
 
-// ── Generate pivots ──
+// ── Generate OSINT Pivots ──
 function generatePivots(norm, type, region) {
   const q = encodeURIComponent(norm);
   const pivots = [];
 
   if (type === 'phone') {
-    pivots.push({ label: 'Google exact-number search', url: `https://www.google.com/search?q="${q}"`, cat: 'Search' });
-    pivots.push({ label: 'Bing exact-number search', url: `https://www.bing.com/search?q="${q}"`, cat: 'Search' });
-    pivots.push({ label: 'Google News search', url: `https://news.google.com/search?q="${q}"`, cat: 'News' });
-    pivots.push({ label: 'Truecaller lookup', url: `https://www.truecaller.com/search/${region.code.replace('+','')}/${norm.replace('+','')}`, cat: 'Caller ID' });
-    pivots.push({ label: 'WhatsApp profile check', url: `https://wa.me/${norm.replace('+','')}`, cat: 'Messaging' });
-    pivots.push({ label: 'Telegram search', url: `https://t.me/+${norm.replace('+','')}`, cat: 'Messaging' });
-    pivots.push({ label: 'DuckDuckGo search', url: `https://duckduckgo.com/?q="${q}"`, cat: 'Search' });
-    pivots.push({ label: 'Have I Been Pwned (breach check)', url: `https://haveibeenpwned.com/`, cat: 'Breach' });
+    const num = norm.replace('+', '');
+    pivots.push({ label: 'Google exact-number search', url: `https://www.google.com/search?q="${q}"`, cat: 'Search Engine' });
+    pivots.push({ label: 'Bing exact-number search', url: `https://www.bing.com/search?q="${q}"`, cat: 'Search Engine' });
+    pivots.push({ label: 'DuckDuckGo search', url: `https://duckduckgo.com/?q="${q}"`, cat: 'Search Engine' });
+    pivots.push({ label: 'Google News search', url: `https://news.google.com/search?q="${q}"`, cat: 'News & Media' });
+    pivots.push({ label: 'Truecaller lookup', url: `https://www.truecaller.com/search/${num}`, cat: 'Caller ID' });
+    pivots.push({ label: 'Sync.me caller ID', url: `https://sync.me/search/?number=${num}`, cat: 'Caller ID' });
+    pivots.push({ label: 'Eyecon caller ID', url: `https://eyecon.app/`, cat: 'Caller ID' });
+    pivots.push({ label: 'WhatsApp chat check (wa.me)', url: `https://wa.me/${num}`, cat: 'Messaging' });
+    pivots.push({ label: 'Telegram profile check', url: `https://t.me/+${num}`, cat: 'Messaging' });
+    pivots.push({ label: 'Have I Been Pwned', url: `https://haveibeenpwned.com/`, cat: 'Breach Data' });
+    pivots.push({ label: 'NumLookup API', url: `https://www.numlookup.com/api`, cat: 'Phone Intel' });
+    pivots.push({ label: 'Google reverse image (if photos found)', url: `https://lens.google.com/`, cat: 'Image OSINT' });
+    pivots.push({ label: 'Facebook people search', url: `https://www.facebook.com/search/people/?q=${q}`, cat: 'Social Media' });
+    pivots.push({ label: 'Instagram search', url: `https://www.instagram.com/explore/search/?q=${q}`, cat: 'Social Media' });
+    pivots.push({ label: 'LinkedIn search', url: `https://www.linkedin.com/search/results/people/?keywords=${q}`, cat: 'Social Media' });
+    pivots.push({ label: 'X/Twitter search', url: `https://x.com/search?q=${q}`, cat: 'Social Media' });
+    pivots.push({ label: 'Snapchat username check', url: `https://www.snapchat.com/add/${num}`, cat: 'Social Media' });
+    pivots.push({ label: 'TikTok search', url: `https://www.tiktok.com/search?q=${q}`, cat: 'Social Media' });
+    pivots.push({ label: 'Reddit search', url: `https://www.reddit.com/search/?q=${q}`, cat: 'Social Media' });
+    pivots.push({ label: 'YouTube search', url: `https://www.youtube.com/results?search_query=${q}`, cat: 'Social Media' });
   } else if (type === 'email') {
-    const emailEncoded = encodeURIComponent(norm);
-    pivots.push({ label: 'Google exact-email search', url: `https://www.google.com/search?q="${emailEncoded}"`, cat: 'Search' });
-    pivots.push({ label: 'Bing exact-email search', url: `https://www.bing.com/search?q="${emailEncoded}"`, cat: 'Search' });
-    pivots.push({ label: 'Have I Been Pwned', url: `https://haveibeenpwned.com/account/${norm}`, cat: 'Breach' });
+    pivots.push({ label: 'Google exact-email search', url: `https://www.google.com/search?q="${encodeURIComponent(norm)}"`, cat: 'Search Engine' });
+    pivots.push({ label: 'Bing email search', url: `https://www.bing.com/search?q="${encodeURIComponent(norm)}"`, cat: 'Search Engine' });
+    pivots.push({ label: 'DuckDuckGo email search', url: `https://duckduckgo.com/?q="${encodeURIComponent(norm)}"`, cat: 'Search Engine' });
+    pivots.push({ label: 'Have I Been Pwned', url: `https://haveibeenpwned.com/account/${norm}`, cat: 'Breach Data' });
     pivots.push({ label: 'Hunter.io email verifier', url: `https://hunter.io/email-verifier/${norm}`, cat: 'Email Intel' });
-    pivots.push({ label: 'Gravatar profile lookup', url: `https://gravatar.com/${norm}`, cat: 'Profile' });
-    pivots.push({ label: 'Google News search', url: `https://news.google.com/search?q="${emailEncoded}"`, cat: 'News' });
-    pivots.push({ label: 'DuckDuckGo search', url: `https://duckduckgo.com/?q="${emailEncoded}"`, cat: 'Search' });
+    pivots.push({ label: 'Gravatar profile lookup', url: `https://gravatar.com/${norm}`, cat: 'Profile OSINT' });
+    pivots.push({ label: 'Google News search', url: `https://news.google.com/search?q="${encodeURIComponent(norm)}"`, cat: 'News & Media' });
+    pivots.push({ label: 'Facebook search', url: `https://www.facebook.com/search/people/?q=${encodeURIComponent(norm)}`, cat: 'Social Media' });
+    pivots.push({ label: 'LinkedIn search', url: `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(norm)}`, cat: 'Social Media' });
+    pivots.push({ label: 'X/Twitter search', url: `https://x.com/search?q=${encodeURIComponent(norm)}`, cat: 'Social Media' });
   } else if (type === 'username') {
-    pivots.push({ label: 'Google exact-handle search', url: `https://www.google.com/search?q="${q}"`, cat: 'Search' });
+    pivots.push({ label: 'Google exact-handle search', url: `https://www.google.com/search?q="${q}"`, cat: 'Search Engine' });
     pivots.push({ label: 'Sherlock (multi-platform)', url: `https://github.com/sherlock-project/sherlock`, cat: 'Username OSINT' });
     pivots.push({ label: 'WhatsMyName (username search)', url: `https://whatsmyname.app/?q=${encodeURIComponent(norm)}`, cat: 'Username OSINT' });
     pivots.push({ label: 'Namechk (availability)', url: `https://namechk.com/`, cat: 'Username OSINT' });
-    pivots.push({ label: 'Instagram search', url: `https://www.instagram.com/${norm}/`, cat: 'Social' });
-    pivots.push({ label: 'X/Twitter search', url: `https://x.com/${norm}`, cat: 'Social' });
+    pivots.push({ label: 'Instagram profile', url: `https://www.instagram.com/${norm}/`, cat: 'Social Media' });
+    pivots.push({ label: 'X/Twitter profile', url: `https://x.com/${norm}`, cat: 'Social Media' });
     pivots.push({ label: 'GitHub profile', url: `https://github.com/${norm}`, cat: 'Developer' });
-    pivots.push({ label: 'DuckDuckGo search', url: `https://duckduckgo.com/?q="${q}"`, cat: 'Search' });
+    pivots.push({ label: 'TikTok profile', url: `https://www.tiktok.com/@${norm}`, cat: 'Social Media' });
+    pivots.push({ label: 'YouTube search', url: `https://www.youtube.com/@${norm}`, cat: 'Social Media' });
+    pivots.push({ label: 'Reddit user profile', url: `https://www.reddit.com/user/${norm}`, cat: 'Social Media' });
+    pivots.push({ label: 'Pinterest profile', url: `https://www.pinterest.com/${norm}/`, cat: 'Social Media' });
+    pivots.push({ label: 'Twitch channel', url: `https://www.twitch.tv/${norm}`, cat: 'Social Media' });
+    pivots.push({ label: 'DuckDuckGo search', url: `https://duckduckgo.com/?q="${q}"`, cat: 'Search Engine' });
   } else if (type === 'domain') {
     pivots.push({ label: 'WHOIS lookup (ICANN)', url: `https://lookup.icann.org/lookup?d=${norm}`, cat: 'Domain Intel' });
     pivots.push({ label: 'DNS records (SecurityTrails)', url: `https://securitytrails.com/domain/${norm}/dns`, cat: 'DNS' });
     pivots.push({ label: 'VirusTotal report', url: `https://www.virustotal.com/gui/domain/${norm}`, cat: 'Threat Intel' });
     pivots.push({ label: 'Wayback Machine', url: `https://web.archive.org/web/*/${norm}`, cat: 'Archive' });
-    pivots.push({ label: 'Google site search', url: `https://www.google.com/search?q=site:${norm}`, cat: 'Search' });
+    pivots.push({ label: 'Google site search', url: `https://www.google.com/search?q=site:${norm}`, cat: 'Search Engine' });
     pivots.push({ label: 'SSL certificate (crt.sh)', url: `https://crt.sh/?q=${norm}`, cat: 'Certificate' });
     pivots.push({ label: 'BuiltWith tech stack', url: `https://builtwith.com/${norm}`, cat: 'Tech Stack' });
     pivots.push({ label: 'URLVoid reputation', url: `https://www.urlvoid.com/scan/${norm}/`, cat: 'Threat Intel' });
+    pivots.push({ label: 'Shodan (services/ports)', url: `https://www.shodan.io/search?query=${norm}`, cat: 'Threat Intel' });
+    pivots.push({ label: 'Censys search', url: `https://search.censys.io/search?resource=hosts&q=${norm}`, cat: 'Threat Intel' });
+    pivots.push({ label: 'DNSDumpster', url: `https://dnsdumpster.com/`, cat: 'DNS' });
+    pivots.push({ label: 'Google News search', url: `https://news.google.com/search?q=${norm}`, cat: 'News & Media' });
   } else {
     pivots.push({ label: 'Google exact search', url: `https://www.google.com/search?q="${q}"`, cat: 'Search' });
     pivots.push({ label: 'Bing exact search', url: `https://www.bing.com/search?q="${q}"`, cat: 'Search' });
     pivots.push({ label: 'DuckDuckGo search', url: `https://duckduckgo.com/?q="${q}"`, cat: 'Search' });
   }
-
   return pivots;
+}
+
+// ── Generate Digital Footprint ──
+function generateFootprint(norm, type, region) {
+  const num = type === 'phone' ? norm.replace('+', '') : norm;
+  const platforms = [];
+
+  if (type === 'phone') {
+    platforms.push({ name: 'WhatsApp', icon: '💬', desc: `wa.me/${num}`, url: `https://wa.me/${num}`, cat: 'messaging' });
+    platforms.push({ name: 'Telegram', icon: '✈️', desc: `t.me/+${num}`, url: `https://t.me/+${num}`, cat: 'messaging' });
+    platforms.push({ name: 'Signal', icon: '🛡️', desc: `Signal contact check`, url: `https://signal.org/`, cat: 'messaging' });
+    platforms.push({ name: 'Facebook', icon: '👥', desc: `People search by number`, url: `https://www.facebook.com/search/people/?q=${encodeURIComponent(norm)}`, cat: 'social' });
+    platforms.push({ name: 'Instagram', icon: '📸', desc: `Search by phone`, url: `https://www.instagram.com/explore/search/?q=${encodeURIComponent(norm)}`, cat: 'social' });
+    platforms.push({ name: 'Messenger', icon: '💌', desc: `Facebook Messenger check`, url: `https://www.facebook.com/messages/t/${num}`, cat: 'messaging' });
+    platforms.push({ name: 'Truecaller', icon: '📞', desc: `Caller ID & spam score`, url: `https://www.truecaller.com/search/${num}`, cat: 'callerid' });
+    platforms.push({ name: 'Sync.me', icon: '🔄', desc: `Caller ID directory`, url: `https://sync.me/search/?number=${num}`, cat: 'callerid' });
+    platforms.push({ name: 'Viber', icon: '📱', desc: `Viber presence check`, url: `viber://chat?number=${norm}`, cat: 'messaging' });
+    platforms.push({ name: 'LinkedIn', icon: '💼', desc: `Search by phone`, url: `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(norm)}`, cat: 'social' });
+    platforms.push({ name: 'X / Twitter', icon: '🐦', desc: `Search by number`, url: `https://x.com/search?q=${encodeURIComponent(norm)}`, cat: 'social' });
+    platforms.push({ name: 'TikTok', icon: '🎵', desc: `Search by number`, url: `https://www.tiktok.com/search?q=${encodeURIComponent(norm)}`, cat: 'social' });
+    platforms.push({ name: 'Snapchat', icon: '👻', desc: `Username = phone check`, url: `https://www.snapchat.com/add/${num}`, cat: 'social' });
+    platforms.push({ name: 'YouTube', icon: '▶️', desc: `Search by number`, url: `https://www.youtube.com/results?search_query=${encodeURIComponent(norm)}`, cat: 'social' });
+    platforms.push({ name: 'Reddit', icon: '🤖', desc: `Search by number`, url: `https://www.reddit.com/search/?q=${encodeURIComponent(norm)}`, cat: 'social' });
+    platforms.push({ name: 'HIBP', icon: '🔓', desc: `Breach database check`, url: `https://haveibeenpwned.com/`, cat: 'breach' });
+  } else if (type === 'email') {
+    platforms.push({ name: 'Gravatar', icon: '🖼️', desc: `Avatar & profile`, url: `https://gravatar.com/${norm}`, cat: 'profile' });
+    platforms.push({ name: 'HIBP', icon: '🔓', desc: `Breach database check`, url: `https://haveibeenpwned.com/account/${norm}`, cat: 'breach' });
+    platforms.push({ name: 'Hunter.io', icon: '🎯', desc: `Email verifier & finder`, url: `https://hunter.io/email-verifier/${norm}`, cat: 'email' });
+    platforms.push({ name: 'Facebook', icon: '👥', desc: `Search by email`, url: `https://www.facebook.com/search/people/?q=${encodeURIComponent(norm)}`, cat: 'social' });
+    platforms.push({ name: 'LinkedIn', icon: '💼', desc: `Search by email`, url: `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(norm)}`, cat: 'social' });
+    platforms.push({ name: 'X / Twitter', icon: '🐦', desc: `Search by email`, url: `https://x.com/search?q=${encodeURIComponent(norm)}`, cat: 'social' });
+    platforms.push({ name: 'GitHub', icon: '🐙', desc: `Commit email search`, url: `https://github.com/search?q=${encodeURIComponent(norm)}&type=commits`, cat: 'developer' });
+    platforms.push({ name: 'Google', icon: '🔍', desc: `Exact email search`, url: `https://www.google.com/search?q="${encodeURIComponent(norm)}"`, cat: 'search' });
+    platforms.push({ name: 'HaveIBeenPwned', icon: '🔓', desc: `Breach check`, url: `https://haveibeenpwned.com/account/${norm}`, cat: 'breach' });
+    platforms.push({ name: 'Skype', icon: '📞', desc: `Skype email search`, url: `skype:${norm}?userinfo`, cat: 'messaging' });
+  } else if (type === 'username') {
+    platforms.push({ name: 'Instagram', icon: '📸', desc: `/${norm}/`, url: `https://www.instagram.com/${norm}/`, cat: 'social' });
+    platforms.push({ name: 'X / Twitter', icon: '🐦', desc: `/${norm}`, url: `https://x.com/${norm}`, cat: 'social' });
+    platforms.push({ name: 'GitHub', icon: '🐙', desc: `/${norm}`, url: `https://github.com/${norm}`, cat: 'developer' });
+    platforms.push({ name: 'TikTok', icon: '🎵', desc: `@${norm}`, url: `https://www.tiktok.com/@${norm}`, cat: 'social' });
+    platforms.push({ name: 'YouTube', icon: '▶️', desc: `@${norm}`, url: `https://www.youtube.com/@${norm}`, cat: 'social' });
+    platforms.push({ name: 'Reddit', icon: '🤖', desc: `u/${norm}`, url: `https://www.reddit.com/user/${norm}`, cat: 'social' });
+    platforms.push({ name: 'Pinterest', icon: '📌', desc: `/${norm}/`, url: `https://www.pinterest.com/${norm}/`, cat: 'social' });
+    platforms.push({ name: 'Twitch', icon: '🎮', desc: `/${norm}`, url: `https://www.twitch.tv/${norm}`, cat: 'social' });
+    platforms.push({ name: 'Facebook', icon: '👥', desc: `Search by handle`, url: `https://www.facebook.com/search/people/?q=${encodeURIComponent(norm)}`, cat: 'social' });
+    platforms.push({ name: 'LinkedIn', icon: '💼', desc: `Search by handle`, url: `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(norm)}`, cat: 'social' });
+    platforms.push({ name: 'Snapchat', icon: '👻', desc: `add/${norm}`, url: `https://www.snapchat.com/add/${norm}`, cat: 'social' });
+    platforms.push({ name: 'Telegram', icon: '✈️', desc: `t.me/${norm}`, url: `https://t.me/${norm}`, cat: 'messaging' });
+    platforms.push({ name: 'WhatsMyName', icon: '🔍', desc: `Multi-platform check`, url: `https://whatsmyname.app/?q=${encodeURIComponent(norm)}`, cat: 'osint' });
+    platforms.push({ name: 'Sherlock', icon: '🔎', desc: `Multi-platform OSINT`, url: `https://github.com/sherlock-project/sherlock`, cat: 'osint' });
+  } else if (type === 'domain') {
+    platforms.push({ name: 'WHOIS', icon: '📋', desc: `Domain registration`, url: `https://lookup.icann.org/lookup?d=${norm}`, cat: 'domain' });
+    platforms.push({ name: 'VirusTotal', icon: '🦠', desc: `Threat reputation`, url: `https://www.virustotal.com/gui/domain/${norm}`, cat: 'threat' });
+    platforms.push({ name: 'Wayback Machine', icon: '🗄️', desc: `Historical snapshots`, url: `https://web.archive.org/web/*/${norm}`, cat: 'archive' });
+    platforms.push({ name: 'Shodan', icon: '💡', desc: `Services & ports`, url: `https://www.shodan.io/search?query=${norm}`, cat: 'threat' });
+    platforms.push({ name: 'SecurityTrails', icon: '🗺️', desc: `DNS & subdomains`, url: `https://securitytrails.com/domain/${norm}/dns`, cat: 'dns' });
+    platforms.push({ name: 'crt.sh', icon: '🔐', desc: `SSL certificates`, url: `https://crt.sh/?q=${norm}`, cat: 'domain' });
+    platforms.push({ name: 'BuiltWith', icon: '⚙️', desc: `Tech stack`, url: `https://builtwith.com/${norm}`, cat: 'domain' });
+    platforms.push({ name: 'URLVoid', icon: '🚫', desc: `Reputation check`, url: `https://www.urlvoid.com/scan/${norm}/`, cat: 'threat' });
+    platforms.push({ name: 'Censys', icon: '📡', desc: `Host search`, url: `https://search.censys.io/search?resource=hosts&q=${norm}`, cat: 'threat' });
+    platforms.push({ name: 'DNSDumpster', icon: '🗑️', desc: `DNS recon`, url: `https://dnsdumpster.com/`, cat: 'dns' });
+    platforms.push({ name: 'Google', icon: '🔍', desc: `site:${norm}`, url: `https://www.google.com/search?q=site:${norm}`, cat: 'search' });
+  } else {
+    platforms.push({ name: 'Google', icon: '🔍', desc: 'Exact search', url: `https://www.google.com/search?q="${encodeURIComponent(norm)}"`, cat: 'search' });
+    platforms.push({ name: 'Bing', icon: '🔎', desc: 'Exact search', url: `https://www.bing.com/search?q="${encodeURIComponent(norm)}"`, cat: 'search' });
+    platforms.push({ name: 'DuckDuckGo', icon: '🦆', desc: 'Exact search', url: `https://duckduckgo.com/?q="${encodeURIComponent(norm)}"`, cat: 'search' });
+  }
+  return platforms;
+}
+
+// ── Render footprint grid ──
+function renderFootprint() {
+  const grid = $('footprintGrid');
+  if (!record.platforms.length) {
+    grid.innerHTML = '<div style="color:var(--muted-2);text-align:center;padding:30px;font-size:13px">Run an assessment to generate platform presence checks.</div>';
+    return;
+  }
+  grid.innerHTML = record.platforms.map(p => {
+    const catClass = p.cat === 'social' ? 'blue' : p.cat === 'messaging' ? 'green' : p.cat === 'breach' ? 'orange' : p.cat === 'threat' ? 'orange' : '';
+    return `<a class="fp-card" href="${esc(p.url)}" target="_blank" rel="noopener">
+      <div class="fp-icon">${p.icon}</div>
+      <div class="fp-name">${esc(p.name)}</div>
+      <div class="fp-desc">${esc(p.desc)}</div>
+      <span class="fp-status ready">CLICK TO CHECK →</span>
+    </a>`;
+  }).join('');
+}
+
+// ── Render pivots list ──
+function renderPivots() {
+  const list = $('pivotsList');
+  if (!record.pivots.length) {
+    list.innerHTML = '<div style="color:var(--muted-2);text-align:center;padding:30px;font-size:13px">Run an assessment to generate OSINT pivots.</div>';
+    return;
+  }
+  let html = '';
+  let lastCat = '';
+  for (const p of record.pivots) {
+    if (p.cat !== lastCat) {
+      html += `<div style="margin-top:14px;padding-bottom:6px;border-bottom:1px solid var(--line-soft);font:600 11px var(--sans);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)">${esc(p.cat)}</div>`;
+      lastCat = p.cat;
+    }
+    html += `<a href="${esc(p.url)}" target="_blank" rel="noopener" style="display:block;padding:8px 4px;color:var(--blue);text-decoration:none;font:13px var(--mono);border-bottom:1px solid var(--line-soft);transition:all var(--transition)">→ ${esc(p.label)}</a>`;
+  }
+  list.innerHTML = html;
 }
 
 // ── Main run ──
 async function run() {
   if (isRunning) return;
-
   const raw = $('target').value;
   const type = $('targetType').value;
   const norm = normalize(raw, type);
-
-  if (!norm) {
-    alert('Enter a target identifier.');
-    return;
-  }
+  if (!norm) { alert('Enter a target identifier.'); return; }
 
   isRunning = true;
   $('runBtn').disabled = true;
-
   const region = detectRegion(norm, type);
 
   record = {
     caseId: $('caseId').value.trim() || 'CASE-' + Date.now(),
-    target: raw,
-    norm: norm,
-    type: type,
-    country: region,
-    pivots: [],
-    limitations: 4,
-    items: 1,
-    started: new Date().toISOString(),
-    finished: '',
-    status: 'Running'
+    target: raw, norm, type, country: region,
+    pivots: [], platforms: [], limitations: 4, items: 1,
+    started: new Date().toISOString(), finished: '', status: 'Running'
   };
 
   $('caseBadge').textContent = record.caseId;
@@ -985,50 +711,37 @@ async function run() {
   $('statusDot').classList.add('active');
   $('terminal').innerHTML = '';
 
-  log('[INIT] CaseTrace assessment started.', 't-info');
+  log('[INIT] CaseTrace v3.0 assessment started.', 't-info');
   await sleep(300);
 
-  // ── Stage 1: Target Intake ──
-  setStage(1);
-  $('bar').style.width = '10%';
+  // Stage 1: Intake
+  setStage(1); $('bar').style.width = '8%';
   log('[01] TARGET INTAKE', 't-head');
   await sleep(300);
-  log(`[OK] Raw target captured: ${raw}`, 't-ok');
-  log(`[OK] Normalized identifier: ${norm}`, 't-ok');
+  log(`[OK] Raw target captured: ${esc(raw)}`, 't-ok');
+  log(`[OK] Normalized identifier: ${esc(norm)}`, 't-ok');
   log(`[INFO] Target type: ${type.toUpperCase()}`, 't-info');
-
   $('rCase').textContent = record.caseId;
   $('rTarget').textContent = raw;
   $('rType').textContent = type.charAt(0).toUpperCase() + type.slice(1);
   $('rNorm').textContent = norm;
-
-  record.items++;
-  kpis(1);
+  record.items++; kpis(1);
   await sleep(400);
 
-  // ── Stage 2: Metadata ──
-  setStage(2);
-  $('bar').style.width = '30%';
+  // Stage 2: Metadata
+  setStage(2); $('bar').style.width = '20%';
   log('[02] METADATA ANALYSIS', 't-head');
   await sleep(400);
-
   if (type === 'phone') {
     const digits = norm.replace(/\D/g, '');
     log(`[CHECK] Evaluating numbering structure (${digits.length} digits)...`);
     await sleep(300);
-    if (digits.length >= 7) {
-      log(`[OK] Basic structure appears valid.`, 't-ok');
-    } else {
-      log(`[WARN] Identifier may be incomplete (${digits.length} digits).`, 't-warn');
-    }
+    if (digits.length >= 7) log(`[OK] Basic structure appears valid.`, 't-ok');
+    else log(`[WARN] Identifier may be incomplete (${digits.length} digits).`, 't-warn');
     log(`[INFO] ${region.flag} Region: ${region.region} (${region.code})`, 't-info');
   } else if (type === 'email') {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (emailRegex.test(norm)) {
-      log(`[OK] Email format validated.`, 't-ok');
-    } else {
-      log(`[WARN] Email format appears invalid.`, 't-warn');
-    }
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(norm)) log(`[OK] Email format validated.`, 't-ok');
+    else log(`[WARN] Email format appears invalid.`, 't-warn');
     log(`[INFO] ${region.flag} Provider: ${region.region}`, 't-info');
   } else if (type === 'domain') {
     log(`[OK] Domain extracted: ${norm}`, 't-ok');
@@ -1036,73 +749,73 @@ async function run() {
   } else {
     log(`[INFO] Identifier type: ${type}`, 't-info');
   }
-
   $('rCountry').textContent = `${region.flag} ${region.region} ${region.code !== '?' ? '(' + region.code + ')' : ''}`;
   kpis(2);
   await sleep(400);
 
-  // ── Stage 3: OSINT Pivots ──
-  setStage(3);
-  $('bar').style.width = '55%';
+  // Stage 3: OSINT Pivots
+  setStage(3); $('bar').style.width = '40%';
   log('[03] PUBLIC OSINT PIVOTS', 't-head');
   await sleep(300);
-
   record.pivots = generatePivots(norm, type, region);
-
   let lastCat = '';
   record.pivots.forEach((p, i) => {
-    if (p.cat !== lastCat) {
-      log(`[CAT] ${p.cat}`, 't-muted');
-      lastCat = p.cat;
-    }
-    log(`[PIVOT ${String(i + 1).padStart(2, '0')}] ${p.label} → prepared`, 't-pivot');
+    if (p.cat !== lastCat) { log(`[CAT] ${p.cat}`, 't-muted'); lastCat = p.cat; }
+    log(`[PIVOT ${String(i+1).padStart(2,'0')}] ${esc(p.label)} → prepared`, 't-pivot');
   });
-
-  log(`[NOTE] ${record.pivots.length} search pivots prepared. Manual review required — results are not asserted as findings.`, 't-warn');
+  log(`[NOTE] ${record.pivots.length} search pivots prepared. Manual review required.`, 't-warn');
   record.items += record.pivots.length;
+  renderPivots();
   kpis(3);
   await sleep(400);
 
-  // ── Stage 4: Evidence & Limitations ──
-  setStage(4);
-  $('bar').style.width = '78%';
-  log('[04] EVIDENCE & LIMITATIONS', 't-head');
+  // Stage 4: Digital Footprint
+  setStage(4); $('bar').style.width = '60%';
+  log('[04] DIGITAL FOOTPRINT ANALYSIS', 't-head');
   await sleep(300);
-  log(`[LOG] Assessment timestamp: ${new Date().toISOString()}`, 't-ok');
-  log('[LIMIT] Private WhatsApp / Instagram / Telegram content is not publicly extracted.', 't-warn');
-  log('[LIMIT] Device gallery, contacts, GPS and call-detail records require authorized access.', 't-warn');
-  log('[LIMIT] Carrier subscriber identity is not inferred from a number alone.', 't-warn');
-  log('[LIMIT] Results from pivot links require independent verification before inclusion in evidence.', 't-warn');
+  record.platforms = generateFootprint(norm, type, region);
+  log(`[INFO] ${record.platforms.length} platform presence checks generated.`, 't-info');
+  await sleep(200);
+  record.platforms.forEach((p, i) => {
+    log(`[FOOTPRINT ${String(i+1).padStart(2,'0')}] ${p.icon} ${esc(p.name)} — ${esc(p.desc)}`, 't-footprint');
+  });
+  log(`[NOTE] Each platform link requires manual verification. No private data is accessed.`, 't-warn');
+  renderFootprint();
+  $('rPlatforms').innerHTML = record.platforms.map(p => `<span class="tag ${p.cat === 'social' ? 'blue' : p.cat === 'messaging' ? 'green' : p.cat === 'breach' || p.cat === 'threat' ? 'orange' : 'purple'}">${esc(p.name)}</span>`).join(' ');
+  record.items += record.platforms.length;
   kpis(4);
   await sleep(400);
 
-  // ── Stage 5: Report ──
-  setStage(5);
-  $('bar').style.width = '100%';
-  log('[05] REPORT ASSEMBLY', 't-head');
+  // Stage 5: Evidence & Limitations
+  setStage(5); $('bar').style.width = '80%';
+  log('[05] EVIDENCE & LIMITATIONS', 't-head');
+  await sleep(300);
+  log(`[LOG] Assessment timestamp: ${new Date().toISOString()}`, 't-ok');
+  log('[LIMIT] Private WhatsApp/Instagram/Telegram content is not publicly extracted.', 't-warn');
+  log('[LIMIT] Device gallery, contacts, GPS and call-detail records require authorized access.', 't-warn');
+  log('[LIMIT] Carrier subscriber identity is not inferred from a number alone.', 't-warn');
+  log('[LIMIT] Pivot link results require independent verification before inclusion in evidence.', 't-warn');
+  kpis(5);
   await sleep(400);
 
+  // Stage 6: Report
+  setStage(6); $('bar').style.width = '100%';
+  log('[06] REPORT ASSEMBLY', 't-head');
+  await sleep(400);
   record.finished = new Date().toISOString();
   record.status = 'Completed — public-source assessment only';
-
-  $('rPivots').innerHTML = record.pivots.map(p =>
-    `<a href="${p.url}" target="_blank" rel="noopener">${p.label}</a>`
-  ).join('<br>');
   $('rStatus').textContent = record.status;
   $('rTime').textContent = `${record.started} → ${record.finished}`;
   $('stateLabel').textContent = 'COMPLETE';
   $('statusDot').classList.remove('active');
   $('statusDot').classList.add('complete');
-  kpis(5);
-
+  kpis(6);
   log('[COMPLETE] Assessment record assembled.', 't-ok');
+  log(`[DONE] ${record.pivots.length} pivots + ${record.platforms.length} platform checks ready for manual investigation.`, 't-ok');
   log('[SAFEGUARD] No private-account or device data was fabricated or claimed.', 't-ok');
-  log(`[DONE] ${record.pivots.length} pivots ready for manual investigation.`, 't-ok');
 
-  // Save to history
   history.unshift({ ...record });
   renderHistory();
-
   isRunning = false;
   $('runBtn').disabled = false;
 }
@@ -1110,17 +823,14 @@ async function run() {
 // ── History ──
 function renderHistory() {
   const list = $('historyList');
-  if (history.length === 0) {
-    list.innerHTML = '<div class="history-empty">No previous cases in this session.</div>';
-    return;
-  }
-  list.innerHTML = history.map((h, i) => `
-    <div class="history-item" onclick="loadCase(${i})">
-      <div class="h-case">${h.caseId}</div>
-      <div class="h-target">${h.target}</div>
-      <div class="h-date">${h.started.substr(0, 19).replace('T', ' ')}</div>
-    </div>
-  `).join('');
+  if (!history.length) { list.innerHTML = '<div class="history-empty">No previous cases in this session.</div>'; return; }
+  list.innerHTML = history.map((h, i) =>
+    `<div class="history-item" onclick="loadCase(${i})">
+      <div class="h-case">${esc(h.caseId)}</div>
+      <div class="h-target">${esc(h.target)}</div>
+      <div class="h-date">${h.started.substr(0,19).replace('T',' ')}</div>
+    </div>`
+  ).join('');
 }
 
 function loadCase(i) {
@@ -1132,26 +842,13 @@ function loadCase(i) {
 
 // ── Export ──
 function exportReport(format) {
-  if (!record.caseId || record.status === 'Not started') {
-    alert('Run an assessment first.');
-    return;
-  }
-
+  if (!record.caseId || record.status === 'Not started') { alert('Run an assessment first.'); return; }
   const report = {
-    case_id: record.caseId,
-    target: record.target,
-    normalized: record.norm,
+    case_id: record.caseId, target: record.target, normalized: record.norm,
     target_type: record.type,
-    metadata: {
-      region: record.country.region,
-      calling_code: record.country.code,
-      flag: record.country.flag
-    },
-    public_search_pivots: record.pivots.map(p => ({
-      label: p.label,
-      url: p.url,
-      category: p.cat
-    })),
+    metadata: { region: record.country.region, calling_code: record.country.code },
+    public_search_pivots: record.pivots.map(p => ({ label: p.label, url: p.url, category: p.cat })),
+    digital_footprint: record.platforms.map(p => ({ platform: p.name, description: p.desc, url: p.url, category: p.cat })),
     limitations: [
       'Private WhatsApp/Instagram/Telegram messages were not accessed.',
       'Device gallery, contacts, GPS and carrier call-detail records were not accessed.',
@@ -1159,11 +856,8 @@ function exportReport(format) {
       'Pivot link results require independent verification before inclusion as evidence.'
     ],
     investigator_note: $('note').value,
-    started: record.started,
-    finished: record.finished,
-    status: record.status,
-    tool: 'CaseTrace v2.0',
-    generated: new Date().toISOString()
+    started: record.started, finished: record.finished, status: record.status,
+    tool: 'CaseTrace v3.0', generated: new Date().toISOString()
   };
 
   if (format === 'json') {
@@ -1171,86 +865,70 @@ function exportReport(format) {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = record.caseId + '.json';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  } else if (format === 'html') {
-    const html = generateHTMLReport(report);
+    a.click(); URL.revokeObjectURL(a.href);
+  } else {
+    const html = genHTMLReport(report);
     const blob = new Blob([html], { type: 'text/html' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = record.caseId + '.html';
-    a.click();
-    URL.revokeObjectURL(a.href);
+    a.click(); URL.revokeObjectURL(a.href);
   }
 }
 
-function generateHTMLReport(r) {
-  return `<!doctype html><html><head><meta charset="UTF-8"><title>${r.case_id} — CaseTrace Report</title>
+function genHTMLReport(r) {
+  return `<!doctype html><html><head><meta charset="UTF-8"><title>${esc(r.case_id)} — CaseTrace Report</title>
 <style>
-body{font:14px/1.7 -apple-system,BlinkMacSystemFont,sans-serif;max-width:800px;margin:40px auto;padding:20px;color:#1a1a1a}
+body{font:14px/1.7 -apple-system,BlinkMacSystemFont,sans-serif;max-width:850px;margin:40px auto;padding:20px;color:#1a1a1a}
 h1{color:#1a5a44;border-bottom:2px solid #3ddb9c;padding-bottom:10px}
-h2{color:#333;margin-top:30px}
+h2{color:#333;margin-top:30px;font-size:18px}
 table{width:100%;border-collapse:collapse;margin:10px 0}
-td{padding:8px;border-bottom:1px solid #ddd}
+td{padding:8px;border-bottom:1px solid #ddd;vertical-align:top}
 td:first-child{font-weight:600;width:30%;color:#666}
 a{color:#0066cc}
 .limit{padding:8px 12px;border-left:3px solid #e8b855;background:#fffbeb;margin:6px 0}
+.platform{display:inline-block;padding:6px 14px;margin:3px;border:1px solid #ddd;border-radius:6px;font-size:13px}
 .footer{margin-top:40px;padding-top:16px;border-top:1px solid #ddd;color:#999;font-size:12px}
-.badge{display:inline-block;padding:3px 10px;border-radius:4px;background:#1a5a44;color:#fff;font-size:12px}
+.badge{display:inline-block;padding:4px 12px;border-radius:4px;background:#1a5a44;color:#fff;font-size:12px}
+.cat-header{font-weight:700;color:#555;margin-top:16px;padding-bottom:4px;border-bottom:1px solid #eee}
 </style></head><body>
 <h1>CaseTrace Investigation Report</h1>
-<p><span class="badge">${r.case_id}</span> &nbsp; ${r.status}</p>
+<p><span class="badge">${esc(r.case_id)}</span> &nbsp; ${esc(r.status)}</p>
 <table>
-<tr><td>Target</td><td>${r.target}</td></tr>
-<tr><td>Normalized</td><td>${r.normalized}</td></tr>
-<tr><td>Type</td><td>${r.target_type}</td></tr>
-<tr><td>Region</td><td>${r.metadata.flag} ${r.metadata.region} ${r.metadata.calling_code !== '?' ? '(' + r.metadata.calling_code + ')' : ''}</td></tr>
-<tr><td>Started</td><td>${r.started}</td></tr>
-<tr><td>Finished</td><td>${r.finished}</td></tr>
+<tr><td>Target</td><td>${esc(r.target)}</td></tr>
+<tr><td>Normalized</td><td>${esc(r.normalized)}</td></tr>
+<tr><td>Type</td><td>${esc(r.target_type)}</td></tr>
+<tr><td>Region</td><td>${esc(r.metadata.region)} (${esc(r.metadata.calling_code)})</td></tr>
+<tr><td>Started</td><td>${esc(r.started)}</td></tr>
+<tr><td>Finished</td><td>${esc(r.finished)}</td></tr>
 </table>
 <h2>Investigator Note</h2>
-<p>${r.investigator_note || 'No note recorded.'}</p>
+<p>${esc(r.investigator_note || 'No note recorded.')}</p>
+<h2>Digital Footprint (${r.digital_footprint.length} platforms)</h2>
+${r.digital_footprint.map(p => `<a href="${esc(p.url)}" target="_blank" rel="noopener" class="platform">${esc(p.platform)} — ${esc(p.description)}</a>`).join('')}
 <h2>Public Search Pivots (${r.public_search_pivots.length})</h2>
-<table>
-${r.public_search_pivots.map(p => `<tr><td>${p.category}</td><td><a href="${p.url}" target="_blank" rel="noopener">${p.label}</a></td></tr>`).join('')}
-</table>
+${(() => { let h='',lc=''; for(const p of r.public_search_pivots){ if(p.category!==lc){h+=`<div class="cat-header">${esc(p.category)}</div>`;lc=p.category;} h+=`<div><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.label)}</a></div>`;} return h; })()}
 <h2>Limitations</h2>
-${r.limitations.map(l => `<div class="limit">${l}</div>`).join('')}
-<div class="footer">
-Generated by CaseTrace v2.0 on ${r.generated}<br>
-This report records observations; it does not manufacture forensic results.
-</div>
+${r.limitations.map(l => `<div class="limit">${esc(l)}</div>`).join('')}
+<div class="footer">Generated by CaseTrace v3.0 on ${esc(r.generated)}<br>This report records observations; it does not manufacture forensic results.</div>
 </body></html>`;
 }
 
 // ── Clear ──
 function clearAll() {
-  $('caseId').value = '';
-  $('target').value = '';
-  $('note').value = '';
-  $('terminal').innerHTML = '<div class="t-line t-muted"><span class="ts">' + now() + '</span>[READY] Console cleared. Enter a target to begin.</div>';
-  $('bar').style.width = '0';
-  setStage(0);
-  kpis(0);
-  $('caseBadge').textContent = 'NO CASE';
-  $('caseBadge').classList.remove('active');
-  $('stateLabel').textContent = 'READY';
-  $('statusDot').classList.remove('active', 'complete');
-  record = { caseId:"", target:"", norm:"", type:"", country:"", pivots:[], limitations:4, items:0, started:"", finished:"", status:"Not started" };
-  ['rCase','rTarget','rType','rNorm','rCountry','rPivots','rStatus','rTime'].forEach(id => $(id).textContent = '—');
+  $('caseId').value=''; $('target').value=''; $('note').value='';
+  $('terminal').innerHTML = `<div class="t-line t-muted"><span class="ts">${now()}</span>[READY] Console cleared. Enter a target to begin.</div>`;
+  $('bar').style.width='0'; setStage(0); kpis(0);
+  $('caseBadge').textContent='NO CASE'; $('caseBadge').classList.remove('active');
+  $('stateLabel').textContent='READY'; $('statusDot').classList.remove('active','complete');
+  record = { caseId:"",target:"",norm:"",type:"",country:{},pivots:[],platforms:[],limitations:4,items:0,started:"",finished:"",status:"Not started" };
+  ['rCase','rTarget','rType','rNorm','rCountry','rPlatforms','rStatus','rTime'].forEach(id => $(id).textContent='—');
+  renderFootprint(); renderPivots();
 }
 
-// ── Modal ──
-function closeModal() {
-  $('modalBg').classList.remove('show');
-}
-
-// ── Keyboard shortcut ──
+// ── Keyboard ──
 document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-    e.preventDefault();
-    run();
-  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); run(); }
 });
 </script>
 </body>
